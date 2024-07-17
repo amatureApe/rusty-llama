@@ -13,6 +13,11 @@ async fn main() -> std::io::Result<()> {
     let routes = generate_route_list(App);
     println!("listening on http://{}", &addr);
 
+    #[get("/style.css")]
+    async fn css() -> impl Responder {
+        active_files::NamedFile::open_async("./style/output.css").await
+    }
+
     let model = web::Data::new(get_language_model());    
 
     HttpServer::new(move || {
@@ -20,15 +25,15 @@ async fn main() -> std::io::Result<()> {
         let site_root = &leptos_options.site_root;
 
         App::new()
-            // serve JS/WASM/CSS from `pkg`
-            .service(Files::new("/pkg", format!("{site_root}/pkg")))
-            // serve other assets from the `assets` directory
-            .service(Files::new("/assets", site_root))
-            // serve the favicon from /favicon.ico
-            .service(favicon)
-            .leptos_routes(leptos_options.to_owned(), routes.to_owned(), App)
-            .app_data(web::Data::new(leptos_options.to_owned()))
-        //.wrap(middleware::Compress::default())
+            .app_data(model.clone())
+            .service(css)
+            .route("/api/{tail:.*}", leptos_actix::handle_server_fns())
+            .leptos_routes(
+                leptos_options.to_owned(),
+                routes.to_owned(),
+                |cx| view! {cx, <App/>},
+            )
+            .service(Files::new("/", site_root))
     })
     .bind(&addr)?
     .run()

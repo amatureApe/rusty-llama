@@ -2,6 +2,12 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 
+mod components;
+use components::chat_area::ChatArea;
+use components::type_area::TypeArea;
+
+use crate::model::conversation::{Conversation, Message};
+
 #[component]
 pub fn App() -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
@@ -17,6 +23,8 @@ pub fn App() -> impl IntoView {
             set_conversation.update(move |c| {
                 c.message.push(user_message);
             });
+
+            converse(conversation.get())
         }
     })
 
