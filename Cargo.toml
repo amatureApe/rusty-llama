@@ -16,6 +16,9 @@ leptos_meta = { version = "0.6" }
 leptos_actix = { version = "0.6", optional = true }
 leptos_router = { version = "0.6" }
 wasm-bindgen = "=0.2.92"
+serde = { version = "1.0.204", features = ["derive"] }
+llm = { git = "https://github.com/rustformers/llm.git", branch = "main", optional = true }
+rand = { version = "0.8.5", optional = true }
 
 [features]
 csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr"]
@@ -24,6 +27,8 @@ ssr = [
   "dep:actix-files",
   "dep:actix-web",
   "dep:leptos_actix",
+  "dep:llm",
+  "dep:rand",
   "leptos/ssr",
   "leptos_meta/ssr",
   "leptos_router/ssr",
